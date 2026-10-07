@@ -1,5 +1,5 @@
-const ADMIN_PASSWORD = "siti-admin-2026";
-const AUTH_KEY = "siti-admin-auth";
+const ADMIN_PASSWORD = "esma-2026";
+const AUTH_KEY = "esma-admin-auth";
 
 const isAuthenticated = () => localStorage.getItem(AUTH_KEY) === "true";
 const setAuthenticated = (value) => localStorage.setItem(AUTH_KEY, String(value));
