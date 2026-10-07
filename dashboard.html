@@ -100,6 +100,19 @@
               <button class="button button-secondary" type="button" id="reset-form">Batal</button>
               <button class="button button-secondary" type="button" id="admin-logout">Logout</button>
             </div>
+            <details class="publish-settings">
+              <summary>Pengaturan publikasi untuk semua pengunjung</summary>
+              <div class="publish-settings-fields">
+                <label for="publish-worker-url">URL Cloudflare Worker
+                  <input id="publish-worker-url" type="url" placeholder="https://esma-blog-publisher.esma-blog.workers.dev" autocomplete="url">
+                </label>
+                <label for="publish-worker-token">Kunci publikasi Worker
+                  <input id="publish-worker-token" type="password" placeholder="Masukkan kunci yang disetel pada Worker" autocomplete="new-password">
+                </label>
+                <p>Kunci hanya disimpan selama tab dashboard ini terbuka. Artikel baru muncul setelah GitHub Pages selesai diperbarui.</p>
+              </div>
+            </details>
+            <p id="publish-status" class="publish-status" role="status" aria-live="polite"></p>
           </form>
         </div>
       </div>
