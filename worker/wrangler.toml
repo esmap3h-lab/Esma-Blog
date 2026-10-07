@@ -1,0 +1,9 @@
+name = "esma-blog-publisher"
+main = "worker.js"
+compatibility_date = "2025-01-01"
+
+[vars]
+GITHUB_OWNER = "esmap3h-lab"
+GITHUB_REPO = "Esma-Blog"
+GITHUB_BRANCH = "master"
+ALLOWED_ORIGINS = "https://esmap3h-lab.github.io,http://localhost:8000"

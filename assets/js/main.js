@@ -124,12 +124,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Pencarian memfilter judul dan kata kunci artikel tanpa memuat ulang halaman.
   const searchInput = document.querySelector("#article-search");
-  const articleCards = Array.from(document.querySelectorAll(".searchable-card"));
   const emptyState = document.querySelector("#empty-state");
   const resultsCount = document.querySelector("[data-results-count]");
 
-  if (searchInput && articleCards.length > 0) {
+  if (searchInput) {
     const filterArticles = () => {
+      const articleCards = Array.from(document.querySelectorAll(".searchable-card"));
       const query = searchInput.value.trim().toLocaleLowerCase("id");
       let visibleCount = 0;
 
@@ -147,6 +147,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     searchInput.addEventListener("input", filterArticles);
+    filterArticles();
 
     // Tombol "/" memudahkan pengunjung langsung mencari artikel.
     document.addEventListener("keydown", (event) => {

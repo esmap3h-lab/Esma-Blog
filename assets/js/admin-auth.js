@@ -1,5 +1,5 @@
-const ADMIN_PASSWORD = "esma-2026";
-const AUTH_KEY = "esma-admin-auth";
+const ADMIN_PASSWORD = "esma1234";
+const AUTH_KEY = "admin-authenticated";
 
 const isAuthenticated = () => localStorage.getItem(AUTH_KEY) === "true";
 const setAuthenticated = (value) => localStorage.setItem(AUTH_KEY, String(value));
@@ -58,6 +58,8 @@ document.addEventListener("DOMContentLoaded", () => {
   if (logoutButton) {
     logoutButton.addEventListener("click", () => {
       setAuthenticated(false);
+      sessionStorage.removeItem("siti-portfolio-publish-worker-url");
+      sessionStorage.removeItem("siti-portfolio-publish-worker-token");
       showLogin();
       if (loginStatus) {
         loginStatus.textContent = "Anda telah logout.";
