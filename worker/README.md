@@ -1,6 +1,6 @@
 # Menyiapkan publikasi artikel untuk semua pengunjung
 
-Dashboard GitHub Pages bersifat statis dan tidak dapat menyimpan artikel langsung ke server. Worker ini menerima artikel dari dashboard, lalu menggunakan GitHub API untuk memperbarui `articles.json` pada repository. Token GitHub hanya disimpan sebagai secret di Cloudflare Worker.
+Dashboard GitHub Pages bersifat statis dan tidak dapat menyimpan artikel langsung ke server. Worker ini menerima artikel dari dashboard, lalu menggunakan GitHub API untuk memperbarui `articles.json` pada repository. Permintaan API menyertakan header `User-Agent: esma-blog-publisher`. Token GitHub hanya disimpan sebagai secret di Cloudflare Worker.
 
 ## Sebelum memasang Worker
 

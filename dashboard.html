@@ -93,7 +93,107 @@
             </div>
             <div class="field-group">
               <label for="article-content">Isi artikel</label>
-              <textarea id="article-content" name="content" rows="16" placeholder="Tulis isi artikel Anda di sini..." required></textarea>
+              <div class="rich-editor">
+                <div class="rich-editor-toolbar" role="toolbar" aria-label="Pemformatan isi artikel">
+                  <label class="editor-select-label" for="editor-font" title="Jenis font">Aa</label>
+                  <select id="editor-font" aria-label="Jenis font">
+                    <option value="DM Sans">DM Sans</option>
+                    <option value="Manrope">Manrope</option>
+                    <option value="Arial">Arial</option>
+                    <option value="Georgia">Georgia</option>
+                    <option value="Verdana">Verdana</option>
+                  </select>
+                  <label class="editor-select-label" for="editor-size" title="Ukuran font">A↕</label>
+                  <select id="editor-size" aria-label="Ukuran font">
+                    <option value="12">12 px</option>
+                    <option value="14">14 px</option>
+                    <option value="16" selected>16 px</option>
+                    <option value="18">18 px</option>
+                    <option value="24">24 px</option>
+                    <option value="32">32 px</option>
+                  </select>
+                  <label class="editor-select-label" for="editor-line-height" title="Jarak baris">↕</label>
+                  <select id="editor-line-height" aria-label="Jarak baris paragraf">
+                    <option value="1.2">Rapat</option>
+                    <option value="1.5">1,5</option>
+                    <option value="1.8" selected>1,8</option>
+                    <option value="2">2</option>
+                    <option value="2.5">Renggang</option>
+                  </select>
+                  <button class="editor-tool-button" type="button" data-editor-command="bold" aria-label="Tebalkan" aria-pressed="false"><strong>B</strong></button>
+                  <button class="editor-tool-button" type="button" data-editor-command="italic" aria-label="Miring" aria-pressed="false"><em>I</em></button>
+                  <button class="editor-tool-button" type="button" data-editor-command="underline" aria-label="Garis bawah" aria-pressed="false"><u>U</u></button>
+                  <button class="editor-tool-button" type="button" data-editor-command="formatBlock" data-editor-value="<p>" aria-label="Paragraf" title="Paragraf" aria-pressed="false">¶</button>
+                  <button class="editor-tool-button" type="button" data-editor-command="formatBlock" data-editor-value="<h2>" aria-label="Judul" title="Judul" aria-pressed="false">H₂</button>
+                  <button class="editor-tool-button" type="button" data-editor-command="formatBlock" data-editor-value="<h3>" aria-label="Subjudul" title="Subjudul" aria-pressed="false">H₃</button>
+                  <button class="editor-tool-button" type="button" data-editor-command="formatBlock" data-editor-value="<blockquote>" aria-label="Kutipan" title="Kutipan" aria-pressed="false">❝</button>
+                  <button class="editor-tool-button" type="button" data-editor-command="justifyLeft" aria-label="Rata kiri" title="Rata kiri" aria-pressed="false">⇤</button>
+                  <button class="editor-tool-button" type="button" data-editor-command="justifyCenter" aria-label="Rata tengah" title="Rata tengah" aria-pressed="false">↔</button>
+                  <button class="editor-tool-button" type="button" data-editor-command="justifyRight" aria-label="Rata kanan" title="Rata kanan" aria-pressed="false">⇥</button>
+                  <button class="editor-tool-button" type="button" data-editor-command="justifyFull" aria-label="Rata kiri kanan" title="Rata kiri kanan" aria-pressed="false">☰</button>
+                  <button class="editor-tool-button" type="button" data-editor-command="insertUnorderedList" aria-label="Daftar titik" title="Daftar titik" aria-pressed="false">•≡</button>
+                  <button class="editor-tool-button" type="button" data-editor-command="insertOrderedList" aria-label="Daftar nomor" title="Daftar nomor" aria-pressed="false">1≡</button>
+                  <button class="editor-tool-button" id="toggle-figure-fields" type="button" aria-label="Sisipkan gambar" title="Sisipkan gambar" aria-expanded="false" aria-controls="figure-fields">▧</button>
+                  <button class="editor-tool-button" id="toggle-link-fields" type="button" aria-label="Sisipkan hyperlink" title="Sisipkan hyperlink" aria-expanded="false" aria-controls="link-fields">↗</button>
+                </div>
+                <div class="editor-insert-panel" id="figure-fields" hidden>
+                  <div class="editor-insert-fields">
+                    <label for="figure-asset-select">Pilih gambar dari aset
+                      <select id="figure-asset-select">
+                        <option value="">Pilih file gambar...</option>
+                        <option value="assets/images/landing page blog.jpeg">Landing page blog</option>
+                        <option value="assets/images/Landing-Page-Sehati.png">Landing Page Sehati</option>
+                        <option value="assets/images/Pengembangan-Web.png">Pengembangan Web</option>
+                        <option value="assets/images/Profil-Ms.Learn.png">Profil Microsoft Learn</option>
+                        <option value="assets/images/email-MLSA-sensor.png">Email MLSA</option>
+                        <option value="assets/images/Sertifikat-Coding-Camp.png">Sertifikat Coding Camp</option>
+                      </select>
+                    </label>
+                    <label for="figure-url">Path gambar atau URL
+                      <input id="figure-url" type="text" placeholder="assets/images/gambar.png atau https://...">
+                    </label>
+                    <label for="figure-alt">Deskripsi gambar
+                      <input id="figure-alt" type="text" placeholder="Jelaskan isi gambar">
+                    </label>
+                    <label for="figure-caption">Keterangan gambar
+                      <input id="figure-caption" type="text" placeholder="Opsional">
+                    </label>
+                    <button class="button button-secondary" id="insert-figure" type="button">Masukkan gambar</button>
+                  </div>
+                  <img class="figure-preview" id="figure-preview" alt="Pratinjau gambar yang akan disisipkan" hidden>
+                  <p class="editor-insert-status" id="figure-status" role="status" aria-live="polite"></p>
+                </div>
+                <div class="editor-insert-panel figure-layout-panel" id="figure-layout-fields" hidden>
+                  <p class="editor-panel-title">Perataan gambar</p>
+                  <p class="editor-insert-status" id="figure-layout-status" role="status" aria-live="polite">Klik gambar di editor untuk memilih dan mengatur perataannya.</p>
+                  <div class="editor-insert-fields">
+                    <label for="figure-align">Posisi gambar
+                      <select id="figure-align">
+                        <option value="left">Kiri</option>
+                        <option value="center" selected>Tengah</option>
+                        <option value="right">Kanan</option>
+                      </select>
+                    </label>
+                  </div>
+                  <button class="button button-secondary" id="remove-figure" type="button">Hapus gambar terpilih</button>
+                </div>
+                <div class="editor-insert-panel" id="link-fields" hidden>
+                  <div class="editor-insert-fields">
+                    <label for="link-text">Teks tautan
+                      <input id="link-text" type="text" placeholder="Teks yang ditampilkan">
+                    </label>
+                    <label for="link-url">Alamat hyperlink
+                      <input id="link-url" type="url" placeholder="https://contoh.com">
+                    </label>
+                    <button class="button button-secondary" id="insert-link" type="button">Masukkan hyperlink</button>
+                  </div>
+                  <p class="editor-insert-status" id="link-status" role="status" aria-live="polite"></p>
+                </div>
+                <div id="article-content-editor" class="article-rich-content" contenteditable="true" role="textbox" aria-label="Isi artikel" aria-multiline="true" data-placeholder="Tulis isi artikel di sini..."></div>
+              </div>
+              <textarea id="article-content" name="content" class="visually-hidden" tabindex="-1" aria-hidden="true"></textarea>
+              <p class="editor-help">Pilih atau sorot teks sebelum mengubah format. Klik gambar untuk mengatur perataan tanpa mengubah ukurannya; tombol format menyala saat gaya aktif.</p>
+              <p id="editor-validation-status" class="editor-validation-status" role="status" aria-live="polite"></p>
             </div>
             <div class="form-actions">
               <button class="button button-primary" type="submit">Simpan artikel</button>

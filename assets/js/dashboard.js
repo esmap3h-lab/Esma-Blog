@@ -59,11 +59,14 @@ const editor = document.querySelector("#article-content-editor");
 const editorToolbar = document.querySelector(".rich-editor-toolbar");
 const fontSelect = document.querySelector("#editor-font");
 const sizeSelect = document.querySelector("#editor-size");
+const lineHeightSelect = document.querySelector("#editor-line-height");
+const siteHeader = document.querySelector(".site-header");
 const newArticleButton = document.querySelector("#new-article");
 const resetButton = document.querySelector("#reset-form");
 const insertFigureButton = document.querySelector("#insert-figure");
 const insertLinkButton = document.querySelector("#insert-link");
 const figureFields = document.querySelector("#figure-fields");
+const figureLayoutFields = document.querySelector("#figure-layout-fields");
 const linkFields = document.querySelector("#link-fields");
 const editorValidationStatus = document.querySelector("#editor-validation-status");
 const publishWorkerUrlInput = document.querySelector("#publish-worker-url");
@@ -73,6 +76,9 @@ const saveArticleButton = form.querySelector('button[type="submit"]');
 const figureUrlInput = document.querySelector("#figure-url");
 const figureAssetSelect = document.querySelector("#figure-asset-select");
 const figurePreview = document.querySelector("#figure-preview");
+const figureAlignSelect = document.querySelector("#figure-align");
+const figureLayoutStatus = document.querySelector("#figure-layout-status");
+const removeFigureButton = document.querySelector("#remove-figure");
 const fontFamilies = new Map([
   ["dm sans", "DM Sans"],
   ["manrope", "Manrope"],
@@ -81,16 +87,19 @@ const fontFamilies = new Map([
   ["verdana", "Verdana"]
 ]);
 const allowedFontSizes = new Set(["12", "14", "16", "18", "24", "32"]);
+const allowedLineHeights = new Set(["1.2", "1.5", "1.8", "2", "2.5"]);
 const allowedEditorTags = new Set([
   "a", "b", "blockquote", "br", "div", "em", "figcaption", "figure",
   "h2", "h3", "i", "img", "li", "ol", "p", "span", "strong", "u", "ul"
 ]);
 let savedEditorRange = null;
+let selectedFigure = null;
 
 const isAllowedUrl = (value, allowedProtocols) => {
   try {
     const url = new URL(value, window.location.href);
-    return allowedProtocols.includes(url.protocol);
+    if (allowedProtocols.includes(url.protocol)) return true;
+    return !/^[a-zA-Z][a-zA-Z\d+.-]*:/.test(value) && !value.startsWith("//");
   } catch {
     return false;
   }
@@ -123,6 +132,12 @@ const sanitizeEditorHtml = (markup) => {
       if (!isAllowedUrl(src, ["http:", "https:"])) return null;
       output.setAttribute("src", src);
       output.setAttribute("alt", node.getAttribute("alt") || "");
+      if (node.style.marginLeft === "0px" || node.style.marginLeft === "auto") {
+        output.style.marginLeft = node.style.marginLeft;
+      }
+      if (node.style.marginRight === "0px" || node.style.marginRight === "auto") {
+        output.style.marginRight = node.style.marginRight;
+      }
       return output;
     }
 
@@ -148,6 +163,10 @@ const sanitizeEditorHtml = (markup) => {
       : "";
     if (textAlign && ["div", "p", "h2", "h3", "blockquote"].includes(outputTag)) {
       output.style.textAlign = textAlign;
+    }
+    const lineHeight = node.style.lineHeight;
+    if (allowedLineHeights.has(lineHeight) && ["div", "p", "h2", "h3", "blockquote", "li"].includes(outputTag)) {
+      output.style.lineHeight = lineHeight;
     }
 
     Array.from(node.childNodes).forEach((child) => {
@@ -189,50 +208,142 @@ const saveEditorSelection = () => {
 };
 
 const restoreEditorSelection = () => {
+  const range = savedEditorRange && editor.contains(savedEditorRange.commonAncestorContainer)
+    ? savedEditorRange.cloneRange()
+    : (() => {
+      const endRange = document.createRange();
+      endRange.selectNodeContents(editor);
+      endRange.collapse(false);
+      return endRange;
+    })();
   editor.focus();
   const selection = window.getSelection();
   if (!selection) return;
 
   selection.removeAllRanges();
-  if (savedEditorRange && editor.contains(savedEditorRange.commonAncestorContainer)) {
-    selection.addRange(savedEditorRange);
-  } else {
-    const range = document.createRange();
-    range.selectNodeContents(editor);
-    range.collapse(false);
-    selection.addRange(range);
-  }
-};
-
-const insertEditorNode = (node) => {
-  restoreEditorSelection();
-  const selection = window.getSelection();
-  if (!selection || !selection.rangeCount) return;
-  const range = selection.getRangeAt(0);
-  range.deleteContents();
-  range.insertNode(node);
-  range.setStartAfter(node);
-  range.collapse(true);
-  selection.removeAllRanges();
   selection.addRange(range);
   savedEditorRange = range.cloneRange();
-  syncEditorContent();
+  return range;
 };
 
-const insertFigureAtSelection = (figure) => {
-  restoreEditorSelection();
+const syncToolbarState = () => {
   const selection = window.getSelection();
-  if (!selection || !selection.rangeCount) return;
-
+  if (!selection || !selection.rangeCount || !editor.contains(selection.anchorNode)) return;
   const range = selection.getRangeAt(0);
   const startElement = range.startContainer.nodeType === Node.ELEMENT_NODE
     ? range.startContainer
     : range.startContainer.parentElement;
   const block = startElement && startElement.closest("p, h2, h3, blockquote, li, div");
+  const selectedTextNodes = [];
+  if (range.collapsed) {
+    if (range.startContainer.nodeType === Node.TEXT_NODE) selectedTextNodes.push(range.startContainer);
+  } else {
+    const walker = document.createTreeWalker(editor, NodeFilter.SHOW_TEXT);
+    while (walker.nextNode()) {
+      if (range.intersectsNode(walker.currentNode)) selectedTextNodes.push(walker.currentNode);
+    }
+  }
+  const hasInlineStyle = (textNode, tags, styleCheck) => {
+    let element = textNode.parentElement;
+    while (element && element !== editor) {
+      if (tags.includes(element.tagName.toLowerCase()) || styleCheck(element)) return true;
+      element = element.parentElement;
+    }
+    return false;
+  };
+  const selectedStyleState = (command) => {
+    if (!selectedTextNodes.length) return false;
+    const states = selectedTextNodes.map((textNode) => {
+      const parentStyle = getComputedStyle(textNode.parentElement);
+      if (command === "bold") {
+        return hasInlineStyle(textNode, ["b", "strong"], (element) => {
+          const weight = Number.parseInt(getComputedStyle(element).fontWeight, 10);
+          return Number.isFinite(weight) && weight >= 600;
+        });
+      }
+      if (command === "italic") {
+        return hasInlineStyle(textNode, ["i", "em"], (element) => getComputedStyle(element).fontStyle === "italic");
+      }
+      if (command === "underline") {
+        return hasInlineStyle(textNode, ["u"], (element) => element.style.textDecorationLine.includes("underline"));
+      }
+      if (command === "insertUnorderedList" || command === "insertOrderedList") {
+        const list = textNode.parentElement.closest("ul, ol");
+        return Boolean(list && list.tagName.toLowerCase() === (command === "insertUnorderedList" ? "ul" : "ol"));
+      }
+      return parentStyle.fontWeight === "700";
+    });
+    return states.every(Boolean);
+  };
+  editorToolbar.querySelectorAll("[data-editor-command]").forEach((button) => {
+    const command = button.dataset.editorCommand;
+    let active = false;
+    if (command === "formatBlock") {
+      const tag = button.dataset.editorValue.match(/^<([a-z0-9]+)>$/i)?.[1];
+      active = Boolean(tag && block && block.tagName.toLowerCase() === tag);
+    } else if (["bold", "italic", "underline", "insertUnorderedList", "insertOrderedList"].includes(command)) {
+      active = selectedStyleState(command);
+    } else if (command.startsWith("justify")) {
+      const alignment = block ? getComputedStyle(block).textAlign : "";
+      const expected = {
+        justifyLeft: ["left", "start"],
+        justifyCenter: ["center"],
+        justifyRight: ["right", "end"],
+        justifyFull: ["justify"]
+      }[command] || [];
+      active = expected.includes(alignment);
+    } else {
+      active = document.queryCommandState(command);
+    }
+    button.setAttribute("aria-pressed", String(active));
+  });
+};
+
+const updateFigureSelection = (figure) => {
+  if (selectedFigure) selectedFigure.classList.remove("is-selected");
+  selectedFigure = figure && editor.contains(figure) ? figure : null;
+  if (selectedFigure) selectedFigure.classList.add("is-selected");
+  figureLayoutFields.hidden = !selectedFigure;
+  if (!selectedFigure) return;
+
+  const image = selectedFigure.querySelector("img");
+  figureAlignSelect.value = image?.style.marginLeft === "0px"
+    ? "left"
+    : image?.style.marginRight === "0px"
+      ? "right"
+      : "center";
+  figureLayoutStatus.textContent = `Gambar terpilih: ${image?.alt || "tanpa deskripsi"}.`;
+};
+
+const applyFigureLayout = (figure) => {
+  if (!figure || !editor.contains(figure)) return;
+  const image = figure.querySelector("img");
+  if (!image) return;
+
+  image.style.marginLeft = figureAlignSelect.value === "left" ? "0px" : "auto";
+  image.style.marginRight = figureAlignSelect.value === "right" ? "0px" : "auto";
+  syncEditorContent();
+  syncToolbarState();
+};
+
+const insertFigureAtSelection = (figure) => {
+  const range = restoreEditorSelection();
+  const selection = window.getSelection();
+  if (!range || !selection) return;
+  range.deleteContents();
+  range.collapse(true);
+  const startElement = range.startContainer.nodeType === Node.ELEMENT_NODE
+    ? range.startContainer
+    : range.startContainer.parentElement;
+  const block = startElement && startElement.closest("p, h2, h3, blockquote, div");
   if (block && block !== editor && editor.contains(block)) {
+    const trailingRange = range.cloneRange();
+    trailingRange.setEnd(block, block.childNodes.length);
+    const trailingContent = trailingRange.extractContents();
     block.after(figure);
     const nextParagraph = document.createElement("p");
-    nextParagraph.appendChild(document.createElement("br"));
+    if (trailingContent.childNodes.length) nextParagraph.appendChild(trailingContent);
+    else nextParagraph.appendChild(document.createElement("br"));
     figure.after(nextParagraph);
     const nextRange = document.createRange();
     nextRange.setStart(nextParagraph, 0);
@@ -243,12 +354,17 @@ const insertFigureAtSelection = (figure) => {
   } else {
     range.deleteContents();
     range.insertNode(figure);
-    range.setStartAfter(figure);
+    const nextParagraph = document.createElement("p");
+    nextParagraph.appendChild(document.createElement("br"));
+    figure.after(nextParagraph);
+    range.setStart(nextParagraph, 0);
     range.collapse(true);
     selection.removeAllRanges();
     selection.addRange(range);
     savedEditorRange = range.cloneRange();
   }
+  updateFigureSelection(figure);
+  applyFigureLayout(figure);
   syncEditorContent();
 };
 
@@ -341,6 +457,8 @@ const getSelectedArticle = () => articles.find((article) => article.id === curre
   || articles[0] || null;
 
 const updateForm = (article) => {
+  selectedFigure = null;
+  figureLayoutFields.hidden = true;
   if (!article) {
     form.reset();
     editor.innerHTML = "";
@@ -467,11 +585,16 @@ form.addEventListener("submit", async (event) => {
 newArticleButton.addEventListener("click", createNewArticle);
 editor.addEventListener("input", syncEditorContent);
 editor.addEventListener("input", () => {
+  saveEditorSelection();
   if (editorValidationStatus.textContent) editorValidationStatus.textContent = "";
 });
 editor.addEventListener("mouseup", saveEditorSelection);
 editor.addEventListener("keyup", saveEditorSelection);
 editor.addEventListener("focus", saveEditorSelection);
+document.addEventListener("selectionchange", () => {
+  saveEditorSelection();
+  syncToolbarState();
+});
 editorToolbar.addEventListener("mousedown", (event) => {
   saveEditorSelection();
   if (event.target.closest("button")) event.preventDefault();
@@ -483,26 +606,83 @@ editorToolbar.querySelectorAll("[data-editor-command]").forEach((button) => {
     document.execCommand(button.dataset.editorCommand, false, button.dataset.editorValue || null);
     saveEditorSelection();
     syncEditorContent();
+    syncToolbarState();
   });
 });
 
-fontSelect.addEventListener("change", () => {
-  restoreEditorSelection();
-  document.execCommand("fontName", false, fontSelect.value);
-  saveEditorSelection();
+const applyInlineStyleToSelection = (property, value) => {
+  const range = restoreEditorSelection();
+  if (!range || range.collapsed) return;
+
+  const walker = document.createTreeWalker(editor, NodeFilter.SHOW_TEXT);
+  const textNodes = [];
+  while (walker.nextNode()) {
+    if (range.intersectsNode(walker.currentNode)) textNodes.push(walker.currentNode);
+  }
+
+  const styledNodes = [];
+  textNodes.forEach((textNode) => {
+    const start = range.startContainer === textNode ? range.startOffset : 0;
+    const end = range.endContainer === textNode ? range.endOffset : textNode.length;
+    if (start >= end) return;
+
+    const replacement = document.createDocumentFragment();
+    if (start > 0) replacement.appendChild(document.createTextNode(textNode.data.slice(0, start)));
+    const styledText = document.createElement("span");
+    styledText.style[property] = value;
+    styledText.textContent = textNode.data.slice(start, end);
+    replacement.appendChild(styledText);
+    if (end < textNode.length) replacement.appendChild(document.createTextNode(textNode.data.slice(end)));
+    textNode.replaceWith(replacement);
+    styledNodes.push(styledText);
+  });
+
+  if (styledNodes.length) {
+    const selection = window.getSelection();
+    const nextRange = document.createRange();
+    nextRange.setStartBefore(styledNodes[0]);
+    nextRange.setEndAfter(styledNodes[styledNodes.length - 1]);
+    selection.removeAllRanges();
+    selection.addRange(nextRange);
+    savedEditorRange = nextRange.cloneRange();
+  }
   syncEditorContent();
+  syncToolbarState();
+};
+
+fontSelect.addEventListener("change", () => {
+  applyInlineStyleToSelection("fontFamily", fontSelect.value);
 });
 
 sizeSelect.addEventListener("change", () => {
-  restoreEditorSelection();
-  document.execCommand("fontSize", false, "7");
-  editor.querySelectorAll('font[size="7"]').forEach((font) => {
-    font.removeAttribute("size");
-    font.style.fontSize = `${sizeSelect.value}px`;
+  applyInlineStyleToSelection("fontSize", `${sizeSelect.value}px`);
+});
+
+lineHeightSelect.addEventListener("change", () => {
+  const range = restoreEditorSelection();
+  if (!range) return;
+  const blocks = Array.from(editor.querySelectorAll("p, h2, h3, blockquote, li, div"))
+    .filter((block) => range.intersectsNode(block));
+  if (range.collapsed) {
+    const startElement = range.startContainer.nodeType === Node.ELEMENT_NODE
+      ? range.startContainer
+      : range.startContainer.parentElement;
+    const currentBlock = startElement && startElement.closest("p, h2, h3, blockquote, li, div");
+    if (currentBlock && currentBlock !== editor && editor.contains(currentBlock)) blocks.push(currentBlock);
+  }
+  [...new Set(blocks)].forEach((block) => {
+    block.style.lineHeight = lineHeightSelect.value;
   });
   saveEditorSelection();
   syncEditorContent();
+  syncToolbarState();
 });
+
+const updateEditorToolbarOffset = () => {
+  editorToolbar.style.setProperty("--editor-toolbar-top", `${Math.ceil(siteHeader.getBoundingClientRect().height)}px`);
+};
+updateEditorToolbarOffset();
+new ResizeObserver(updateEditorToolbarOffset).observe(siteHeader);
 
 document.querySelector("#toggle-figure-fields").addEventListener("click", (event) => {
   const shouldOpen = figureFields.hidden;
@@ -576,7 +756,7 @@ const previewFigureUrl = () => {
     figurePreview.hidden = true;
     document.querySelector("#figure-status").textContent = `Gambar tidak ditemukan: ${imageUrl}. Periksa nama file dan path assets/images/.`;
   };
-  figurePreview.src = new URL(imageUrl, `${window.location.origin}/`).href;
+  figurePreview.src = new URL(imageUrl, window.location.href).href;
 };
 
 figureAssetSelect.addEventListener("change", () => {
@@ -587,6 +767,30 @@ figureAssetSelect.addEventListener("change", () => {
 figureUrlInput.addEventListener("input", () => {
   figureAssetSelect.value = "";
   previewFigureUrl();
+});
+
+editor.addEventListener("click", (event) => {
+  const figure = event.target.closest("figure");
+  if (figure && editor.contains(figure)) {
+    updateFigureSelection(figure);
+    return;
+  }
+  if (!event.target.closest("figure") && selectedFigure) updateFigureSelection(null);
+});
+
+figureAlignSelect.addEventListener("change", () => applyFigureLayout(selectedFigure));
+
+removeFigureButton.addEventListener("click", () => {
+  if (!selectedFigure) return;
+  const figure = selectedFigure;
+  const followingParagraph = figure.nextElementSibling?.matches("p") ? figure.nextElementSibling : null;
+  figure.remove();
+  if (followingParagraph?.textContent.trim() === "" && !followingParagraph.querySelector("img")) {
+    followingParagraph.remove();
+  }
+  updateFigureSelection(null);
+  figureLayoutStatus.textContent = "Gambar dihapus dari draft.";
+  syncEditorContent();
 });
 
 insertLinkButton.addEventListener("click", () => {
@@ -602,25 +806,32 @@ insertLinkButton.addEventListener("click", () => {
     return;
   }
 
-  restoreEditorSelection();
-  const selection = window.getSelection();
+  const range = restoreEditorSelection();
   const link = document.createElement("a");
   link.setAttribute("href", linkUrl);
   link.target = "_blank";
   link.rel = "noopener noreferrer";
-  if (selection && selection.rangeCount && !selection.getRangeAt(0).collapsed) {
-    link.appendChild(selection.getRangeAt(0).extractContents());
-    selection.getRangeAt(0).insertNode(link);
-    const range = document.createRange();
+  if (range && !range.collapsed) {
+    link.appendChild(range.extractContents());
+    range.insertNode(link);
     range.setStartAfter(link);
     range.collapse(true);
+    const selection = window.getSelection();
     selection.removeAllRanges();
     selection.addRange(range);
     savedEditorRange = range.cloneRange();
     syncEditorContent();
   } else {
     link.textContent = linkText;
-    insertEditorNode(link);
+    if (!range) return;
+    range.insertNode(link);
+    range.setStartAfter(link);
+    range.collapse(true);
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+    savedEditorRange = range.cloneRange();
+    syncEditorContent();
   }
   document.querySelector("#link-text").value = "";
   document.querySelector("#link-url").value = "";

@@ -1,16 +1,20 @@
 const cardThemes = ["visual-blue", "visual-lilac", "visual-peach", "visual-mint", "visual-yellow", "visual-pink"];
-const cardImages = [
-  "assets/images/project-learning.svg",
-  "assets/images/project-web.svg",
-  "assets/images/project-ai.svg",
-  "assets/images/project-cloud.svg"
-];
+const cardImagesByArticleId = new Map([
+  ["microsoft-learn", "assets/images/learning.journey.png"],
+  ["web-development", "assets/images/project-web.svg"],
+  ["ai-ketahui", "assets/images/project-ai.svg"],
+  ["cloud-computing", "assets/images/project-cloud.svg"],
+  ["community-learning", "assets/images/learning.journey.png"],
+  ["document-process", "assets/images/project-web.svg"]
+]);
+const defaultCardImage = "assets/images/project-web.svg";
 const safeArticleTags = new Set([
   "a", "b", "blockquote", "br", "div", "em", "figcaption", "figure",
   "h2", "h3", "i", "img", "li", "ol", "p", "span", "strong", "u", "ul"
 ]);
 const safeArticleFonts = new Set(["DM Sans", "Manrope", "Arial", "Georgia", "Verdana"]);
 const safeArticleSizes = new Set(["12px", "14px", "16px", "18px", "24px", "32px"]);
+const safeArticleLineHeights = new Set(["1.2", "1.5", "1.8", "2", "2.5"]);
 
 const readPublicArticles = async () => {
   const response = await fetch(new URL("articles.json", window.location.href), { cache: "no-store" });
@@ -22,7 +26,9 @@ const readPublicArticles = async () => {
 
 const safeArticleUrl = (value, protocols) => {
   try {
-    return protocols.includes(new URL(value, window.location.href).protocol);
+    const url = new URL(value, window.location.href);
+    if (protocols.includes(url.protocol)) return true;
+    return !/^[a-zA-Z][a-zA-Z\d+.-]*:/.test(value) && !value.startsWith("//");
   } catch {
     return false;
   }
@@ -52,6 +58,12 @@ const cleanArticleHtml = (html) => {
       if (!safeArticleUrl(src, ["http:", "https:"])) return null;
       output.setAttribute("src", src);
       output.setAttribute("alt", node.getAttribute("alt") || "");
+      if (node.style.marginLeft === "0px" || node.style.marginLeft === "auto") {
+        output.style.marginLeft = node.style.marginLeft;
+      }
+      if (node.style.marginRight === "0px" || node.style.marginRight === "auto") {
+        output.style.marginRight = node.style.marginRight;
+      }
       return output;
     }
 
@@ -68,11 +80,14 @@ const cleanArticleHtml = (html) => {
     const fontSize = node.style.fontSize;
     if (safeArticleFonts.has(fontFamily)) output.style.fontFamily = fontFamily;
     if (safeArticleSizes.has(fontSize)) output.style.fontSize = fontSize;
+    if (safeArticleLineHeights.has(node.style.lineHeight)
+      && ["div", "p", "h2", "h3", "blockquote", "li"].includes(tag)) {
+      output.style.lineHeight = node.style.lineHeight;
+    }
     if (["left", "center", "right", "justify"].includes(node.style.textAlign)
       && ["div", "p", "h2", "h3", "blockquote"].includes(tag)) {
       output.style.textAlign = node.style.textAlign;
     }
-
     Array.from(node.childNodes).forEach((child) => {
       const cleanChild = cleanNode(child);
       if (cleanChild) output.appendChild(cleanChild);
@@ -104,11 +119,12 @@ const articleText = (content) => {
 const readingTime = (article) => Math.max(1, Math.ceil(articleText(article.content).trim().split(/\s+/).filter(Boolean).length / 200));
 
 const articleHref = (id) => `blog.html?article=${encodeURIComponent(id)}`;
+const articleCardImage = (article) => cardImagesByArticleId.get(String(article.id)) || defaultCardImage;
 
 const makeArticleCard = (article, index) => {
   const card = document.createElement("article");
   const theme = cardThemes[index % cardThemes.length];
-  const image = cardImages[index % cardImages.length];
+  const image = articleCardImage(article);
   card.className = "article-card searchable-card";
   card.dataset.articleId = article.id;
   card.dataset.dynamicArticle = "true";
@@ -150,6 +166,8 @@ const makeArticleCard = (article, index) => {
 
 const updateExistingBlogCard = (card, article) => {
   card.dataset.search = `${article.category || ""} ${article.title} ${article.summary || ""}`;
+  const image = card.querySelector(".article-visual img");
+  if (image) image.src = articleCardImage(article);
   const meta = card.querySelector(".article-meta");
   if (meta) meta.textContent = `${article.category || "Artikel"} · ${readingTime(article)} menit baca`;
   const heading = card.querySelector("h2");

@@ -66,7 +66,8 @@ const upsertArticle = async (article, env) => {
     "Accept": "application/vnd.github+json",
     "Authorization": `Bearer ${env.GITHUB_TOKEN}`,
     "Content-Type": "application/json",
-    "X-GitHub-Api-Version": API_VERSION
+    "X-GitHub-Api-Version": API_VERSION,
+    "User-Agent": "esma-blog-publisher"
   };
   const current = await getArticlesFile(env, headers);
   const articleIndex = current.articles.findIndex((item) => item.id === article.id);
