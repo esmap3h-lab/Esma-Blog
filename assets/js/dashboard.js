@@ -69,6 +69,8 @@ const figureFields = document.querySelector("#figure-fields");
 const figureLayoutFields = document.querySelector("#figure-layout-fields");
 const linkFields = document.querySelector("#link-fields");
 const editorValidationStatus = document.querySelector("#editor-validation-status");
+const articleEditorMode = document.querySelector("#article-editor-mode");
+const articleEditorCategory = document.querySelector("#article-editor-category");
 const publishWorkerUrlInput = document.querySelector("#publish-worker-url");
 const publishWorkerTokenInput = document.querySelector("#publish-worker-token");
 const publishStatus = document.querySelector("#publish-status");
@@ -390,6 +392,7 @@ const getStoredArticles = () => {
 
 let articles = getStoredArticles();
 let currentArticleId = null;
+let isCreatingArticle = false;
 
 const slugify = (value) => value
   .toLowerCase()
@@ -456,6 +459,12 @@ const publishArticle = async (article) => {
 const getSelectedArticle = () => articles.find((article) => article.id === currentArticleId)
   || articles[0] || null;
 
+const updateEditorIndicators = () => {
+  const mode = isCreatingArticle ? "Menulis Artikel Baru" : "Mengedit Artikel";
+  articleEditorMode.textContent = `Mode: ${mode} · ID: ${currentArticleId || "-"}`;
+  articleEditorCategory.textContent = `Kategori: ${inputs.category.value.trim() || "-"}`;
+};
+
 const updateForm = (article) => {
   selectedFigure = null;
   figureLayoutFields.hidden = true;
@@ -464,10 +473,13 @@ const updateForm = (article) => {
     editor.innerHTML = "";
     syncEditorContent();
     currentArticleId = null;
+    isCreatingArticle = true;
+    updateEditorIndicators();
     return;
   }
 
   currentArticleId = article.id;
+  isCreatingArticle = article.published === false;
   inputs.title.value = article.title || "";
   inputs.category.value = article.category || "";
   inputs.summary.value = article.summary || "";
@@ -476,6 +488,7 @@ const updateForm = (article) => {
   editorValidationStatus.textContent = "";
   syncEditorContent();
   closeInsertPanels();
+  updateEditorIndicators();
 };
 
 const renderArticleList = () => {
@@ -518,6 +531,7 @@ const createNewArticle = () => {
   articles.unshift(article);
   saveArticles();
   currentArticleId = article.id;
+  isCreatingArticle = true;
   updateForm(article);
   renderArticleList();
 };
@@ -574,6 +588,7 @@ form.addEventListener("submit", async (event) => {
   saveArticles();
   articles = getStoredArticles();
   currentArticleId = nextArticle.id;
+  isCreatingArticle = false;
   updateForm(nextArticle);
   renderArticleList();
 
@@ -583,6 +598,7 @@ form.addEventListener("submit", async (event) => {
 });
 
 newArticleButton.addEventListener("click", createNewArticle);
+inputs.category.addEventListener("input", updateEditorIndicators);
 editor.addEventListener("input", syncEditorContent);
 editor.addEventListener("input", () => {
   saveEditorSelection();

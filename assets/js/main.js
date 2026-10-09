@@ -80,8 +80,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Teks perkenalan diketik bertahap; tampilkan langsung jika gerakan dikurangi.
-  const typewriter = document.querySelector("[data-typewriter]");
-  if (typewriter) {
+  document.querySelectorAll("[data-typewriter]").forEach((typewriter) => {
     const fullText = typewriter.dataset.typewriter || "";
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -102,7 +101,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       window.setTimeout(typeNextCharacter, 250);
     }
-  }
+  });
 
   // Menu kecil untuk navigasi pada layar ponsel.
   const menuButton = document.querySelector(".menu-toggle");

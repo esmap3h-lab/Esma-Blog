@@ -93,7 +93,13 @@
               <textarea id="article-summary" name="summary" rows="3" placeholder="Tuliskan ringkasan singkat artikel" required></textarea>
             </div>
             <div class="field-group">
-              <label for="article-content">Isi artikel</label>
+              <div class="article-content-heading">
+                <label for="article-content">Isi artikel</label>
+                <div class="article-editor-indicators" aria-live="polite">
+                  <span id="article-editor-mode" class="article-editor-indicator"></span>
+                  <span id="article-editor-category" class="article-editor-indicator"></span>
+                </div>
+              </div>
               <div class="rich-editor">
                 <div class="rich-editor-toolbar" role="toolbar" aria-label="Pemformatan isi artikel">
                   <label class="editor-select-label" for="editor-font" title="Jenis font">Aa</label>
