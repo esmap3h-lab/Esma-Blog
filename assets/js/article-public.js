@@ -4,7 +4,7 @@ const cardImagesByArticleId = new Map([
   ["web-development", "assets/images/project-web.svg"],
   ["ai-ketahui", "assets/images/project-ai.svg"],
   ["cloud-computing", "assets/images/project-cloud.svg"],
-  ["community-learning", "assets/images/Esma-LearningJourney.png"],
+  ["community-learning", "assets/images/Esma-Learning.Journey.png"],
   ["document-process", "assets/images/project-web.svg"]
 ]);
 const defaultCardImage = "assets/images/project-web.svg";
