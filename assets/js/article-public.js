@@ -1,10 +1,10 @@
 const cardThemes = ["visual-blue", "visual-lilac", "visual-peach", "visual-mint", "visual-yellow", "visual-pink"];
 const cardImagesByArticleId = new Map([
   ["microsoft-learn", "assets/images/Esma-Learning.Journey.png"],
-  ["web-development", "assets/images/project-web.svg"],
+  ["web-development", "assets/images/kartu.artikel.2.png"],
   ["ai-ketahui", "assets/images/project-ai.svg"],
   ["cloud-computing", "assets/images/project-cloud.svg"],
-  ["community-learning", "assets/images/Esma-Learning.Journey.png"],
+  ["community-learning", "assets/images/learning.journey.png"],
   ["document-process", "assets/images/project-web.svg"]
 ]);
 const defaultCardImage = "assets/images/project-web.svg";
