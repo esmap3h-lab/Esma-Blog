@@ -117,13 +117,16 @@ h1, h2, h3 { font-family: var(--heading); }
 .visual-orbit { position: absolute; border: 1px solid #dceaf8; border-radius: 50%; }
 .orbit-one { width: 385px; height: 385px; }
 .orbit-two { width: 310px; height: 310px; border-style: dashed; border-color: #e2edf9; }
-.intro-strip { position: relative; overflow: hidden; padding: 21px 0; color: #ffffff; background: linear-gradient(112deg, #075fa9 0%, #087fd0 48%, #176fc4 100%); }
+.intro-strip { position: relative; overflow-x: auto; overflow-y: hidden; padding: 21px 0; color: #ffffff; background: linear-gradient(112deg, #075fa9 0%, #087fd0 48%, #176fc4 100%); }
 .intro-strip::before, .intro-strip::after { position: absolute; content: ""; border: 1px solid rgba(203, 232, 255, .16); border-radius: 50%; pointer-events: none; }
 .intro-strip::before { width: 480px; height: 480px; top: -370px; left: 16%; box-shadow: 0 0 0 28px rgba(198, 229, 255, .035), 0 0 0 72px rgba(198, 229, 255, .025); animation: intro-glow 8s ease-in-out infinite; }
 .intro-strip::after { width: 360px; height: 360px; right: 7%; bottom: -310px; box-shadow: 0 0 0 30px rgba(198, 229, 255, .035), 0 0 0 76px rgba(198, 229, 255, .025); animation: intro-glow 10s ease-in-out infinite reverse; }
-.intro-strip-inner { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 25px; }
-.intro-strip-inner > p { position: relative; z-index: 1; flex: 0 0 auto; margin: 0; color: rgba(255,255,255,.88); font-size: 12px; font-weight: 700; letter-spacing: 1.4px; }
-.interest-list { position: relative; z-index: 1; display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 16px; color: #ffffff; font-size: 12px; font-weight: 600; }
+.intro-strip-inner { position: relative; display: flex; width: max-content; align-items: center; justify-content: space-between; gap: 24px; min-height: 25px; }
+.intro-strip-inner > p { position: relative; z-index: 1; flex: 0 0 auto; margin: 0; color: rgba(255,255,255,.88); font-size: 13px; font-weight: 700; letter-spacing: 1.1px; white-space: nowrap; }
+.interest-list { position: relative; z-index: 1; display: flex; flex: 0 0 auto; flex-wrap: nowrap; align-items: center; justify-content: flex-end; gap: 8px; color: #ffffff; font-size: 16px; font-weight: 600; white-space: nowrap; }
+.interest-list a { color: inherit; text-decoration: none; transition: color .2s ease, text-decoration-color .2s ease; }
+.interest-list a:hover { color: #d7efff; text-decoration: underline; text-underline-offset: 3px; }
+.interest-list a:focus-visible { border-radius: 2px; outline: 2px solid #ffffff; outline-offset: 4px; }
 .interest-list i { width: 4px; height: 4px; background: rgba(255,255,255,.72); border-radius: 50%; }
 .intro-connector { position: absolute; z-index: 0; top: 50%; left: 0; width: 100%; height: 80px; overflow: visible; transform: translateY(-50%); pointer-events: none; }
 .intro-connector path { fill: none; stroke: rgba(215, 239, 255, .56); stroke-width: 1.4; }
@@ -135,12 +138,15 @@ h1, h2, h3 { font-family: var(--heading); }
 .section-tint { background: var(--soft); }
 .split-section { display: grid; grid-template-columns: .95fr 1.05fr; gap: 90px; align-items: start; }
 .split-section h2, .section-heading h2, .journey-layout h2, .contact-info h2 { margin-bottom: 0; font-size: clamp(34px, 3vw, 46px); line-height: 1.2; letter-spacing: -1.7px; }
-.about-summary { display: grid; grid-template-columns: minmax(0, 1fr) minmax(180px, 250px); align-items: center; gap: 18px; padding-top: 6px; }
+.home-about-layout { display: grid; gap: 24px; }
+.home-about-heading .eyebrow { margin-bottom: 9px; }
+.home-about-title { margin: 0; font-size: clamp(16px, calc(4vw - 7px), 42px); line-height: 1.2; letter-spacing: -1.5px; white-space: nowrap; }
+.about-summary { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 1fr); align-items: center; gap: 32px; }
 .about-summary-copy { position: relative; z-index: 1; }
 .about-summary p { margin-bottom: 14px; color: var(--muted); font-size: 16px; line-height: 1.9; }
 .about-summary .text-link { margin-top: 8px; }
-.about-summary-photo { position: relative; align-self: stretch; min-height: 300px; overflow: hidden; }
-.about-summary-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: center bottom; mix-blend-mode: screen; }
+.about-summary-photo { width: min(100%, 260px); justify-self: end; }
+.about-summary-photo img { width: 100%; height: auto; }
 .text-link { display: inline-flex; align-items: center; gap: 9px; color: var(--blue); font-size: 13px; font-weight: 700; }
 .text-link span, .card-link span { transition: transform .2s ease; }
 .text-link:hover span, .card-link:hover span { transform: translateX(3px); }
@@ -417,14 +423,16 @@ h1, h2, h3 { font-family: var(--heading); }
   .learning-card { top: 14%; right: 1px; }
   .location-card { bottom: 9%; left: 2px; }
   .intro-strip { padding: 18px 0; }
-  .intro-strip-inner { align-items: flex-start; flex-direction: column; gap: 11px; }
+  .intro-strip-inner { align-items: center; flex-direction: row; gap: 12px; }
   .intro-connector { display: none; }
-  .interest-list { justify-content: flex-start; gap: 9px; font-size: 12px; }
+  .interest-list { justify-content: flex-start; gap: 8px; font-size: 16px; }
   .section { padding: 62px 0; }
   .split-section, .about-story-grid, .journey-layout, .contact-layout { grid-template-columns: 1fr; gap: 27px; }
   .split-section { gap: 16px; }
-  .about-summary { grid-template-columns: minmax(0, 1fr) minmax(125px, 36%); gap: 8px; }
-  .about-summary-photo { min-height: 250px; }
+  .home-about-layout { gap: 20px; }
+  .home-about-title { font-size: clamp(16px, 4.2vw, 26px); letter-spacing: -1px; }
+  .about-summary { grid-template-columns: 1fr; gap: 10px; }
+  .about-summary-photo { width: min(68%, 240px); justify-self: center; }
   .split-section h2, .section-heading h2, .journey-layout h2, .contact-info h2 { font-size: 30px; }
   .section-heading { align-items: flex-start; flex-direction: column; gap: 9px; margin-bottom: 23px; }
   .section-heading h2 { font-size: 28px; }

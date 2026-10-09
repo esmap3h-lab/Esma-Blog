@@ -36,6 +36,9 @@ document.addEventListener("DOMContentLoaded", () => {
       case "telegram":
         href = `https://t.me/share/url?url=${currentPageUrl}&text=${currentPageTitle}`;
         break;
+      case "whatsapp":
+        href = `https://api.whatsapp.com/send?text=${currentPageTitle}%20${currentPageUrl}`;
+        break;
       default:
         href = "#";
     }
