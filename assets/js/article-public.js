@@ -1,6 +1,6 @@
 const cardThemes = ["visual-blue", "visual-lilac", "visual-peach", "visual-mint", "visual-yellow", "visual-pink"];
 const cardImagesByArticleId = new Map([
-  ["microsoft-learn", "assets/images/Esma-LearningJourney.png"],
+  ["microsoft-learn", "assets/images/Esma-Learning.Journey.png"],
   ["web-development", "assets/images/project-web.svg"],
   ["ai-ketahui", "assets/images/project-ai.svg"],
   ["cloud-computing", "assets/images/project-cloud.svg"],
