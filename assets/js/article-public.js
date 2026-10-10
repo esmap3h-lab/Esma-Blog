@@ -2,7 +2,7 @@ const cardThemes = ["visual-blue", "visual-lilac", "visual-peach", "visual-mint"
 const cardImagesByArticleId = new Map([
   ["1-web-development", "assets/images/kartu.artikel.2.png"],
   ["2-learning-journey", "assets/images/Esma-Learning.Journey.png"],
-  ["3-artificial-intelligence", "assets/images/project-ai.svg"],
+  ["3-artificial-intelligence", "assets/images/10102026/explore-ai.png"],
   ["4-cloud-computing", "assets/images/project-cloud.svg"],
   ["5-community-learning", "assets/images/Ms.Learn.png"],
   ["6-document-process", "assets/images/project-web.svg"],
