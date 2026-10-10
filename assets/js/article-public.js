@@ -1,12 +1,15 @@
 const cardThemes = ["visual-blue", "visual-lilac", "visual-peach", "visual-mint", "visual-yellow", "visual-pink"];
 const cardImagesByArticleId = new Map([
-  ["microsoft-learn", "assets/images/Esma-Learning.Journey.png"],
-  ["web-development", "assets/images/kartu.artikel.2.png"],
-  ["ai-ketahui", "assets/images/project-ai.svg"],
-  ["cloud-computing", "assets/images/project-cloud.svg"],
-  ["community-learning", "assets/images/learning.journey.png"],
-  ["document-process", "assets/images/project-web.svg"]
+  ["1-web-development", "assets/images/kartu.artikel.2.png"],
+  ["2-learning-journey", "assets/images/Esma-Learning.Journey.png"],
+  ["3-artificial-intelligence", "assets/images/project-ai.svg"],
+  ["4-cloud-computing", "assets/images/project-cloud.svg"],
+  ["5-community-learning", "assets/images/Ms.Learn.png"],
+  ["6-document-process", "assets/images/project-web.svg"],
+  ["7-scam-ready-asean", "assets/images/scam-asean.png"],
+  ["8-halal-journey", "assets/images/halal-journey.png"]
 ]);
+
 const defaultCardImage = "assets/images/project-web.svg";
 const safeArticleTags = new Set([
   "a", "b", "blockquote", "br", "div", "em", "figcaption", "figure",

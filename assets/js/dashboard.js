@@ -3,50 +3,67 @@ const PUBLISH_WORKER_URL_KEY = "siti-portfolio-publish-worker-url";
 const PUBLISH_WORKER_TOKEN_KEY = "siti-portfolio-publish-worker-token";
 const DEFAULT_PUBLISH_WORKER_URL = "https://esma-blog-publisher.esma-blog.workers.dev";
 const defaultArticles = [
+ 
   {
-    id: "microsoft-learn",
-    title: "Memulai perjalanan belajar di Microsoft Learn",
-    category: "Microsoft Learn",
-    summary: "Catatan awal saya mengenal berbagai modul, jalur belajar, dan teknologi di Microsoft Learn.",
-    content: "Microsoft Learn menjadi tempat yang tepat untuk memulai perjalanan belajar saya. Di sana, saya bisa menjelajahi topik yang relevan dan mempelajarinya secara bertahap tanpa merasa kewalahan.\n\nSaya mulai dari dasar, memahami konsep, lalu mencoba menerapkannya dalam proyek kecil. Proses seperti ini membuat saya lebih percaya diri untuk terus berkembang."
+    "id": "1-web-development",
+    "title": "Dari Baris Kode Pertama hingga Website Online: Perjalanan Belajar Microsoft Learn, Agentic AI, dan GitHub",
+    "category": "Web Development",
+    "summary": "Perjalanan belajar teknologi yang mengintegrasikan Microsoft Learn, GitHub, dan Agentic AI untuk membangun keterampilan digital masa depan. Dimulai dari mempelajari konsep dan teknologi melalui Microsoft Learn, dilanjutkan dengan mengembangkan proyek nyata menggunakan GitHub sebagai platform kolaborasi dan pengelolaan kode. Pemanfaatan Agentic AI membantu proses analisis, evaluasi, dan otomatisasi tugas sehingga meningkatkan produktivitas. Melalui pembelajaran berkelanjutan, keterampilan dapat berkembang menjadi solusi yang memberikan dampak nyata bagi masyarakat.",
+    "content": "<p>Artikel tersedia di articles.json</p>"
   },
   {
-    id: "web-development",
-    title: "Belajar web dari HTML, CSS, dan rasa penasaran",
-    category: "Web Development",
-    summary: "Kenapa saya mulai dari dasar dan hal-hal kecil yang saya pelajari di sepanjang jalan.",
-    content: "Ketika saya mulai belajar web, saya tidak langsung fokus pada framework. Saya mulai dari HTML, CSS, dan JavaScript dulu agar memahami fondasi yang benar.\n\nAwalnya terasa sederhana, tetapi semakin lama saya sadar bahwa fondasi itu penting. Dari sana, saya belajar bagaimana membangun halaman yang tidak hanya terlihat bagus, tetapi juga terasa rapi dan mudah dipahami."
+    "id": "2-learning-journey",
+    "title": "Belajar web dari HTML, CSS, dan rasa penasaran",
+    "category": "Learning Journey",
+    "summary": "Dari Coding Camp hingga MLSA: Bagaimana saya menemukan jalan di Dunia Teknologi",
+    "content": "Ketika saya mulai belajar web, saya tidak langsung fokus pada framework. Saya mulai dari HTML, CSS, dan JavaScript dulu agar memahami fondasi yang benar.\n\nAwalnya terasa sederhana, tetapi semakin lama saya sadar bahwa fondasi itu penting. Dari sana, saya belajar bagaimana membangun halaman yang tidak hanya terlihat bagus, tetapi juga terasa rapi dan mudah dipahami.",
   },
   {
-    id: "ai-ketahui",
-    title: "Mengenal AI: belajar memahami, bukan sekadar memakai",
-    category: "Artificial Intelligence",
-    summary: "Eksplorasi pertama saya tentang AI dan bagaimana teknologi ini bisa digunakan dengan bijak.",
-    content: "AI bukan hanya soal alat yang canggih, tetapi juga soal bagaimana kita menggunakannya dengan bijak. Saya mulai melihat bahwa pemahaman terhadap data, proses, dan etika sangat penting.\n\nKetika saya membuka wawasan ini, saya mulai tertarik untuk melihat AI dari sisi yang lebih manusiawi: bagaimana teknologi bisa membantu, bukan menggantikan proses belajar yang sehat."
+    "id": "3-artificial-intelligence",
+    "title": "Mengenal AI: belajar memahami, bukan sekadar memakai",
+    "category": "Artificial Intelligence",
+    "summary": "Eksplorasi pertama saya tentang AI dan bagaimana teknologi ini bisa digunakan dengan bijak.",
+    "content": "AI bukan hanya soal alat yang canggih, tetapi juga soal bagaimana kita menggunakannya dengan bijak. Saya mulai melihat bahwa pemahaman terhadap data, proses, dan etika sangat penting.\n\nKetika saya membuka wawasan ini, saya mulai tertarik untuk melihat AI dari sisi yang lebih manusiawi: bagaimana teknologi bisa membantu, bukan menggantikan proses belajar yang sehat.",
   },
   {
-    id: "cloud-computing",
-    title: "Catatan pertama saat mengenal cloud computing",
-    category: "Cloud Computing",
-    summary: "Memahami ide di balik cloud dan alasan layanan ini menjadi bagian penting teknologi modern.",
-    content: "Cloud computing membuat saya mulai berpikir tentang bagaimana aplikasi dapat berjalan tanpa harus mengandalkan perangkat keras lokal. Konsep penyimpanan, skalabilitas, dan layanan berbasis internet terasa sangat relevan saat ini.\n\nSaya terus belajar tentang cara kerja layanan cloud dan mengapa teknologi ini menjadi fondasi bagi banyak aplikasi modern."
+    "id": "4-cloud-computing",
+    "title": "Catatan pertama saat mengenal cloud computing",
+    "category": "Cloud Computing",
+    "summary": "Memahami ide di balik cloud dan alasan layanan ini menjadi bagian penting teknologi modern.",
+    "content": "Cloud computing membuat saya mulai berpikir tentang bagaimana aplikasi dapat berjalan tanpa harus mengandalkan perangkat keras lokal. Konsep penyimpanan, skalabilitas, dan layanan berbasis internet terasa sangat relevan saat ini.\n\nSaya terus belajar tentang cara kerja layanan cloud dan mengapa teknologi ini menjadi fondasi bagi banyak aplikasi modern.",
   },
   {
-    id: "community-learning",
-    title: "Belajar teknologi terasa lebih seru bersama komunitas",
-    category: "Komunitas",
-    summary: "Refleksi tentang berbagi proses, menemukan teman belajar, dan bertumbuh bersama.",
-    content: "Saat berdiskusi dengan komunitas, saya menyadari bahwa proses belajar memang tidak harus dijalani sendirian. Ada banyak temuan baru, pengalaman berbeda, dan dorongan yang muncul dari sering berbagi.\n\nKarena itu, saya mulai lebih aktif menulis dan membagikan apa yang saya pelajari. Ternyata, proses berbagi justru membuat saya lebih paham."
+    "id": "5-community-learning",
+    "title": "Belajar teknologi terasa lebih seru bersama komunitas",
+    "category": "Komunitas",
+    "summary": "Refleksi tentang berbagi proses, menemukan teman belajar, dan bertumbuh bersama.",
+    "content": "Saat berdiskusi dengan komunitas, saya menyadari bahwa proses belajar memang tidak harus dijalani sendirian. Ada banyak temuan baru, pengalaman berbeda, dan dorongan yang muncul dari sering berbagi.\n\nKarena itu, saya mulai lebih aktif menulis dan membagikan apa yang saya pelajari. Ternyata, proses berbagi justru membuat saya lebih paham.",
   },
   {
-    id: "document-process",
-    title: "Mengapa saya mulai mendokumentasikan proses belajar",
-    category: "Proyek Pribadi",
-    summary: "Alasan di balik website ini dan bagaimana catatan kecil membantu saya terus berkembang.",
-    content: "Saya memutuskan untuk mendokumentasikan setiap langkah belajar karena saya ingin melihat bagaimana proses itu berkembang. Dari ide sederhana hingga hasil yang lebih matang, semua terasa lebih berarti ketika ditulis dan dibagikan.\n\nWebsite ini menjadi ruang untuk mencatat perjalanan, refleksi, dan pengalaman baru saya. Dengan begitu, saya tetap termotivasi untuk terus mencoba dan belajar."
+    "id": "6-document-process",
+    "title": "Mengapa saya mulai mendokumentasikan proses belajar",
+    "category": "Proyek Pribadi",
+    "summary": "Alasan di balik website ini dan bagaimana catatan kecil membantu saya terus berkembang.",
+    "content": "Saya memutuskan untuk mendokumentasikan setiap langkah belajar karena saya ingin melihat bagaimana proses itu berkembang. Dari ide sederhana hingga hasil yang lebih matang, semua terasa lebih berarti ketika ditulis dan dibagikan.\n\nWebsite ini menjadi ruang untuk mencatat perjalanan, refleksi, dan pengalaman baru saya. Dengan begitu, saya tetap termotivasi untuk terus mencoba dan belajar.",
+  },
+  {
+    "id": "7-scam-ready-asean",
+    "title": "Perjalananku di SCAM READY ASEAN 2026",
+    "category": "SCAM READY ASEAN",
+    "summary": "My Journey My Adventure in ",
+    "content": "Catatan perjalanan saya mengikuti SCAM READY ASEAN 2026, mulai dari proses pendaftaran, pengalaman belajar bersama peserta dari berbagai negara ASEAN, hingga wawasan baru tentang kepemimpinan, inovasi, teknologi, dan kolaborasi lintas budaya yang membuka perspektif lebih luas terhadap tantangan dan peluang di era digital.",
+  },
+ 
+  {
+    "id": "8-halal-journey",
+    "title": "Pendampingan Proses Produk Halal area Jateng",
+    "category": "Halal Journey",
+    "summary": "Pendampingan UMKM dalam Pembuatan NIB, Sertifikat Halal, dan Pendaftanan PPPH",
+    "content": "Di bawah naungan LPPPH Edukasi Wakaf Indonesia saya melaukan pendampingan bagi UMKM di area Jateng dalam Proses Sertifikasi Produk Halal para Pelaku Usaha",
   }
-];
+]
 
+{
 const articleListPanel = document.querySelector("#article-list-panel");
 const form = document.querySelector("#article-form");
 const inputs = {
@@ -901,4 +918,5 @@ const initializeDashboard = () => {
   renderArticleList();
 };
 
-initializeDashboard();
+initializeDashboard()
+}
